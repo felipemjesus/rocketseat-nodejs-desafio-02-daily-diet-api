@@ -20,6 +20,95 @@ export async function mealsRoutes(app: FastifyInstance) {
     return { meals }
   })
 
+  app.get('/:userId/registered', async (request, reply) => {
+    const getMealParamsSchema = z.object({
+      userId: z.string().uuid(),
+    })
+
+    const { userId } = getMealParamsSchema.parse(request.params)
+
+    const userExists = await knex('users').where({ id: userId }).first()
+    if (!userExists) {
+      return reply.status(404).send({ message: 'User not found' })
+    }
+
+    const meals = await knex('meals')
+      .where('user_id', userId)
+      .count('id', { as: 'count' })
+      .first()
+
+    return { meals }
+  })
+
+  app.get('/:userId/in-diet', async (request, reply) => {
+    const getMealParamsSchema = z.object({
+      userId: z.string().uuid(),
+    })
+
+    const { userId } = getMealParamsSchema.parse(request.params)
+
+    const userExists = await knex('users').where({ id: userId }).first()
+    if (!userExists) {
+      return reply.status(404).send({ message: 'User not found' })
+    }
+
+    const meals = await knex('meals')
+      .where({
+        user_id: userId,
+        is_diet: true,
+      })
+      .count('id', { as: 'count' })
+      .first()
+
+    return { meals }
+  })
+
+  app.get('/:userId/out-diet', async (request, reply) => {
+    const getMealParamsSchema = z.object({
+      userId: z.string().uuid(),
+    })
+
+    const { userId } = getMealParamsSchema.parse(request.params)
+
+    const userExists = await knex('users').where({ id: userId }).first()
+    if (!userExists) {
+      return reply.status(404).send({ message: 'User not found' })
+    }
+
+    const meals = await knex('meals')
+      .where({
+        user_id: userId,
+        is_diet: false,
+      })
+      .count('id', { as: 'count' })
+      .first()
+
+    return { meals }
+  })
+
+  app.get('/:userId/sequence-in-diet', async (request, reply) => {
+    const getMealParamsSchema = z.object({
+      userId: z.string().uuid(),
+    })
+
+    const { userId } = getMealParamsSchema.parse(request.params)
+
+    const userExists = await knex('users').where({ id: userId }).first()
+    if (!userExists) {
+      return reply.status(404).send({ message: 'User not found' })
+    }
+
+    const meals = await knex('meals')
+      .where({
+        user_id: userId,
+        is_diet: true,
+      })
+      .count('id', { as: 'count' })
+      .first()
+
+    return { meals }
+  })
+
   app.get('/:id/:userId', async (request, reply) => {
     const getMealParamsSchema = z.object({
       id: z.string().uuid(),

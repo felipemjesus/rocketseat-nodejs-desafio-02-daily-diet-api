@@ -3,7 +3,7 @@ import { execSync } from 'node:child_process'
 import request from 'supertest'
 import { app } from '../src/app'
 
-describe('Meals', () => {
+describe.sequential('Meals', () => {
   beforeAll(async () => {
     await app.ready()
   })
@@ -67,8 +67,6 @@ describe('Meals', () => {
     const listMealsResponse = await request(app.server)
       .get(`/meals/${userId}`)
       .expect(200)
-
-    console.log(listMealsResponse.body)
 
     expect(listMealsResponse.body.meals).toEqual([
       expect.objectContaining({
@@ -229,7 +227,7 @@ describe('Meals', () => {
       .get(`/meals/${userId}/registered`)
       .expect(200)
 
-    expect(getMealsResponse.body.user).toEqual(
+    expect(getMealsResponse.body.meals).toEqual(
       expect.objectContaining({
         count: 1,
       }),
@@ -263,7 +261,7 @@ describe('Meals', () => {
       .get(`/meals/${userId}/in-diet`)
       .expect(200)
 
-    expect(getMealsResponse.body.user).toEqual(
+    expect(getMealsResponse.body.meals).toEqual(
       expect.objectContaining({
         count: 1,
       }),
@@ -297,7 +295,7 @@ describe('Meals', () => {
       .get(`/meals/${userId}/out-diet`)
       .expect(200)
 
-    expect(getMealsResponse.body.user).toEqual(
+    expect(getMealsResponse.body.meals).toEqual(
       expect.objectContaining({
         count: 1,
       }),
@@ -330,11 +328,47 @@ describe('Meals', () => {
     await request(app.server)
       .post('/meals')
       .send({
-        title: 'New meal',
+        title: 'New meal 2',
         description: 'Description of new meal',
-        date: '2024-10-01',
+        date: '2024-10-02',
+        hour: '12:00:00',
+        is_diet: 0,
+        user_id: userId,
+      })
+      .expect(201)
+
+    await request(app.server)
+      .post('/meals')
+      .send({
+        title: 'New meal 3',
+        description: 'Description of new meal',
+        date: '2024-10-03',
         hour: '12:00:00',
         is_diet: 1,
+        user_id: userId,
+      })
+      .expect(201)
+
+    await request(app.server)
+      .post('/meals')
+      .send({
+        title: 'New meal 4',
+        description: 'Description of new meal',
+        date: '2024-10-04',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
+      })
+      .expect(201)
+
+    await request(app.server)
+      .post('/meals')
+      .send({
+        title: 'New meal 5',
+        description: 'Description of new meal',
+        date: '2024-10-05',
+        hour: '12:00:00',
+        is_diet: 0,
         user_id: userId,
       })
       .expect(201)
@@ -343,9 +377,9 @@ describe('Meals', () => {
       .get(`/meals/${userId}/sequence-in-diet`)
       .expect(200)
 
-    expect(getMealsResponse.body.user).toEqual(
+    expect(getMealsResponse.body.meals).toEqual(
       expect.objectContaining({
-        count: 1,
+        count: 3,
       }),
     )
   })
