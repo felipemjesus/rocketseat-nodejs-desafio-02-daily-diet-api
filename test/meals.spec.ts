@@ -18,70 +18,97 @@ describe('Meals', () => {
   })
 
   it('should be able to create a new meal', async () => {
+    const createUserResponse = await request(app.server)
+      .post('/users')
+      .send({
+        name: 'New user',
+        email: 'newuser@email.com',
+      })
+      .expect(201)
+
+    const userId = createUserResponse.body.user.id
+
     await request(app.server)
       .post('/meals')
       .send({
         title: 'New meal',
         description: 'Description of new meal',
         date: '2024-10-01',
-        time: '12:00:00',
-        is_diet: true,
-        user_id: 'user-01',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
       })
       .expect(201)
   })
 
   it('should be able to list all meals', async () => {
-    const createMealsResponse = await request(app.server).post('/meals').send({
-      title: 'New meal',
-      description: 'Description of new meal',
-      date: '2024-10-01',
-      time: '12:00:00',
-      is_diet: true,
-      user_id: 'user-01',
-    })
+    const createUserResponse = await request(app.server)
+      .post('/users')
+      .send({
+        name: 'New user',
+        email: 'newuser@email.com',
+      })
+      .expect(201)
 
-    const userId = createMealsResponse.get('userId')
+    const userId = createUserResponse.body.user.id
+
+    await request(app.server)
+      .post('/meals')
+      .send({
+        title: 'New meal',
+        description: 'Description of new meal',
+        date: '2024-10-01',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
+      })
+      .expect(201)
 
     const listMealsResponse = await request(app.server)
-      .get('/meals')
-      .set('userId', userId)
+      .get(`/meals/${userId}`)
       .expect(200)
+
+    console.log(listMealsResponse.body)
 
     expect(listMealsResponse.body.meals).toEqual([
       expect.objectContaining({
         title: 'New meal',
         description: 'Description of new meal',
         date: '2024-10-01',
-        time: '12:00:00',
-        is_diet: true,
-        user_id: 'user-01',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
       }),
     ])
   })
 
   it('should be able to get a specific meal', async () => {
-    const createMealsResponse = await request(app.server).post('/meals').send({
-      title: 'New meal',
-      description: 'Description of new meal',
-      date: '2024-10-01',
-      time: '12:00:00',
-      is_diet: true,
-      user_id: 'user-01',
-    })
+    const createUserResponse = await request(app.server)
+      .post('/users')
+      .send({
+        name: 'New user',
+        email: 'newuser@email.com',
+      })
+      .expect(201)
 
-    const userId = createMealsResponse.get('userId')
+    const userId = createUserResponse.body.user.id
 
-    const listMealsResponse = await request(app.server)
-      .get('/meals')
-      .set('userId', userId)
-      .expect(200)
+    const createMealsResponse = await request(app.server)
+      .post('/meals')
+      .send({
+        title: 'New meal',
+        description: 'Description of new meal',
+        date: '2024-10-01',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
+      })
+      .expect(201)
 
-    const { id } = listMealsResponse.body.meals[0]
+    const id = createMealsResponse.body.meal.id
 
     const getMealResponse = await request(app.server)
-      .get(`/meals/${id}`)
-      .set('userId', userId)
+      .get(`/meals/${id}/${userId}`)
       .expect(200)
 
     expect(getMealResponse.body.meal).toEqual(
@@ -89,10 +116,89 @@ describe('Meals', () => {
         title: 'New meal',
         description: 'Description of new meal',
         date: '2024-10-01',
-        time: '12:00:00',
-        is_diet: true,
-        user_id: 'user-01',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
       }),
     )
+  })
+
+  it('should be able to update a specific meal', async () => {
+    const createUserResponse = await request(app.server)
+      .post('/users')
+      .send({
+        name: 'New user',
+        email: 'newuser@email.com',
+      })
+      .expect(201)
+
+    const userId = createUserResponse.body.user.id
+
+    const createMealsResponse = await request(app.server)
+      .post('/meals')
+      .send({
+        title: 'New meal',
+        description: 'Description of new meal',
+        date: '2024-10-01',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
+      })
+      .expect(201)
+
+    const id = createMealsResponse.body.meal.id
+
+    const updateMealsResponse = await request(app.server)
+      .put(`/meals/${id}/${userId}`)
+      .send({
+        title: 'New meal updated',
+        description: 'Description of new meal',
+        date: '2024-10-01',
+        hour: '12:00:00',
+        is_diet: 1,
+      })
+      .expect(201)
+
+    expect(updateMealsResponse.body.meal).toEqual(
+      expect.objectContaining({
+        title: 'New meal updated',
+        description: 'Description of new meal',
+        date: '2024-10-01',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
+      }),
+    )
+  })
+
+  it('should be able to delete a specific meal', async () => {
+    const createUserResponse = await request(app.server)
+      .post('/users')
+      .send({
+        name: 'New user',
+        email: 'newuser@email.com',
+      })
+      .expect(201)
+
+    const userId = createUserResponse.body.user.id
+
+    const createMealsResponse = await request(app.server)
+      .post('/meals')
+      .send({
+        title: 'New meal',
+        description: 'Description of new meal',
+        date: '2024-10-01',
+        hour: '12:00:00',
+        is_diet: 1,
+        user_id: userId,
+      })
+      .expect(201)
+
+    const id = createMealsResponse.body.meal.id
+
+    await request(app.server)
+      .delete(`/meals/${id}/${userId}`)
+      .send()
+      .expect(204)
   })
 })

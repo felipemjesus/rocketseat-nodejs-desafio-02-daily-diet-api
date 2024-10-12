@@ -22,18 +22,19 @@ describe('Users', () => {
       .post('/users')
       .send({
         name: 'New user',
-        email: 'newuser@email.com'
+        email: 'newuser@email.com',
       })
       .expect(201)
   })
 
   it('should be able to list all users', async () => {
-    const createUsersResponse = await request(app.server)
+    await request(app.server)
       .post('/users')
       .send({
         name: 'New user',
-        email: 'newuser@email.com'
+        email: 'newuser@email.com',
       })
+      .expect(201)
 
     const listUsersResponse = await request(app.server)
       .get('/users')
@@ -42,24 +43,21 @@ describe('Users', () => {
     expect(listUsersResponse.body.users).toEqual([
       expect.objectContaining({
         name: 'New user',
-        email: 'newuser@email.com'
+        email: 'newuser@email.com',
       }),
     ])
   })
 
   it('should be able to get a specific user', async () => {
-    const createUsersResponse = await request(app.server)
+    const createUserResponse = await request(app.server)
       .post('/users')
       .send({
         name: 'New user',
-        email: 'newuser@email.com'
+        email: 'newuser@email.com',
       })
+      .expect(201)
 
-    const listUsersResponse = await request(app.server)
-      .get('/users')
-      .expect(200)
-
-    const { id } = listUsersResponse.body.users[0]
+    const { id } = createUserResponse.body.user
 
     const getUserResponse = await request(app.server)
       .get(`/users/${id}`)
@@ -68,8 +66,49 @@ describe('Users', () => {
     expect(getUserResponse.body.user).toEqual(
       expect.objectContaining({
         name: 'New user',
-        email: 'newuser@email.com'
+        email: 'newuser@email.com',
       }),
     )
+  })
+
+  it('should be able to update a specific user', async () => {
+    const createUserResponse = await request(app.server)
+      .post('/users')
+      .send({
+        name: 'New user',
+        email: 'newuser@email.com',
+      })
+      .expect(201)
+
+    const { id } = createUserResponse.body.user
+
+    const updateUserResponse = await request(app.server)
+      .put(`/users/${id}`)
+      .send({
+        name: 'New user updated',
+        email: 'newuser@email.com',
+      })
+      .expect(201)
+
+    expect(updateUserResponse.body.user).toEqual(
+      expect.objectContaining({
+        name: 'New user updated',
+        email: 'newuser@email.com',
+      }),
+    )
+  })
+
+  it('should be able to delete a specific user', async () => {
+    const createUserResponse = await request(app.server)
+      .post('/users')
+      .send({
+        name: 'New user',
+        email: 'newuser@email.com',
+      })
+      .expect(201)
+
+    const { id } = createUserResponse.body.user
+
+    await request(app.server).delete(`/users/${id}`).send().expect(204)
   })
 })

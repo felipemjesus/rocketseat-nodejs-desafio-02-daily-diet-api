@@ -1,39 +1,35 @@
 {
-  "name": "app",
+  "name": "rocketseat-nodejs-desafio-02-daily-diet-api",
   "version": "1.0.0",
+  "description": "Daily Diet API",
   "main": "index.js",
-  "engines": {
-    "node": ">=20"
-  },
   "scripts": {
+    "start": "node build/server.js",
+    "build": "tsup src --out-dir build",
     "dev": "tsx watch src/server.ts",
     "knex": "node --import=tsx ./node_modules/.bin/knex",
-    "lint": "eslint src --ext .ts",
-    "build": "tsup src --out-dir build",
     "test": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "@fastify/cookie": "^10.0.1",
-    "dotenv": "^16.4.5",
-    "fastify": "^5.0.0",
-    "knex": "^3.1.0",
-    "pg": "^8.13.0",
-    "zod": "^3.23.8"
-  },
   "devDependencies": {
-    "@rocketseat/eslint-config": "^2.2.2",
-    "@types/node": "^22.7.4",
-    "@types/supertest": "^6.0.2",
-    "eslint": "^8.57.1",
-    "supertest": "^7.0.0",
-    "tsup": "^8.3.0",
-    "tsx": "^4.19.1",
-    "typescript": "^5.6.2",
-    "vitest": "^2.1.2",
-    "sqlite3": "^5.1.7"
+    "@rocketseat/eslint-config": "2.2.2",
+    "@types/node": "22.7.5",
+    "eslint": "8.57.1",
+    "sqlite3": "5.1.7",
+    "tsup": "8.3.0",
+    "tsx": "4.19.1",
+    "typescript": "5.6.3"
+  },
+  "dependencies": {
+    "@types/supertest": "6.0.2",
+    "dotenv": "16.4.5",
+    "fastify": "5.0.0",
+    "knex": "3.1.0",
+    "pg": "8.13.0",
+    "supertest": "7.0.0",
+    "vitest": "2.1.2",
+    "zod": "3.23.8"
   }
 }
