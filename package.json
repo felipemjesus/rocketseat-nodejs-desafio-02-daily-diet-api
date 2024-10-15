@@ -8,7 +8,7 @@
     "build": "tsup src --out-dir build",
     "dev": "tsx watch src/server.ts",
     "knex": "node --import=tsx ./node_modules/.bin/knex",
-    "test": "vitest"
+    "test": "vitest --no-file-parallelism"
   },
   "keywords": [],
   "author": "",
